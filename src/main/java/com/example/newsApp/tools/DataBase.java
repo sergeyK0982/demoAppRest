@@ -95,6 +95,7 @@ public class DataBase implements DBAPI {
     }
 
     private HashMap<String, String> uploadArticleText(List<News> newsBySite) {
+        if(newsBySite.isEmpty()) return new HashMap<>();
         log.info("Скачивание статей по сайту - " + newsBySite.get(0).getNewsSite() + "  началось.");
         articleTxtBuffer = new HashMap<>();
         String first = "";
@@ -147,6 +148,10 @@ public class DataBase implements DBAPI {
         log.info("Start dbWriteTask for site - " + newsBySite.get(0).getNewsSite());
         var filteredNewsList = checkExists(newsBySite);
         var articleTextMap = uploadArticleText(filteredNewsList);
+        if(articleTextMap.isEmpty()) {
+            log.info("nothing to write");
+            return;
+        }
             try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS); Statement stmt = conn.createStatement()) {
                 // STEP 1: Register JDBC driver
                 Class.forName(JDBC_DRIVER);
